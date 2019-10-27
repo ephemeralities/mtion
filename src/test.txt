@@ -1,0 +1,117 @@
+/**
+ * ----- MOTION -----
+ * Intended to be a simple, efficient, yet powerful language for programming on
+ * the Gameboy platform.
+ */
+
+/**
+ * ----- Behaviors of the language -----
+ * 
+ * - ints by default only store 8-bit values
+ * - if an int (8-bit) is set to a value greater than 255, the value will 
+ *   overflow and wrap-around.
+ * - attempting to initialize a register to a value greater than its size will 
+ *   result in a compiler warning, and the value will overflow and wrap-around
+ * - initializing a variable with a value greater than is able to be stored will
+ *   result in a compiler warning
+ *
+ * - usage of the '$' operator is not allowed in naming variables (as registers 
+ *   utilize said operator)
+ * - valid characters for naming variables range from 'A' - 'Z', 'a' - 'z', and 
+ *   '0' - '9', as well as underscores. Variables are not allowed to begin or 
+ *   end with a numerical value.
+ *
+ *
+ */
+ 
+ 
+/**
+ * Built in variable types:
+ * Int8 and Int16 (8-bit and 16-bit integers, respectively) (1 - 2 bytes in size)
+ * Int - Defaults to an 8-bit integer
+ * Byte (also char): Used for storing and manipulating data at the byte level (or storing strings) 1 Byte in size
+ * Bool (Boolean) - Used for evaluating statements and as program flags etc. (1-byte)
+ */
+ 
+/*Warning: Variables are not initialized by default. As a result, any variables that are declared and not
+initialized may be filled with "garbage" data*/
+int8 x_position; 
+int8 y_position;
+
+x_position = 17;
+y_position = 21;
+
+
+/**
+ * Built in variables and functions
+ * ----- Variables -----
+ * $A - Direct access to the accumulator register (8-bit) 
+ * $B -  (8-bit)
+ * $C -  (8-bit)
+ * $D -  (8-bit)
+ * $E -  (8-bit)
+ * $F - Flag register
+ * $BC - (16-bit)
+ * $DE - (16-bit)
+ * $HL - (16-bit)
+ * $PC - Program counter register (careful with it) (16-bit)
+ * $SP - Stack pointer (16-bit)
+ *
+ * ----- Functions -----
+ * $BASE() - Sets base function/s critical for the program to work. These will
+ * be kept in ROM (RAM) no matter what. Programs placed in base should be as 
+ * small as possible to ensure that the dynamic recompiler will have enough 
+ * space to work with.
+ */
+
+
+/**
+ * ----- Operators -----
+ * "++" - increments variable by 1
+ * "--" - decrements variable by 1
+ * "+"  - Adds two variables or implicit values together and spews out a result
+ * "-"  - Subtracts two variables or implicit values from each other
+ * "&"  - Bitwise AND
+ * "|"  - Bitwise OR
+ * "^"  - Bitwise XOR
+ * "$"  - Previous variable (Might change) 
+ * ":"  - Previous operation (Might change)
+ * "$:" - Previous variable operator + operation (Might change)
+ */
+
+if( option == "pizza" || $: "hotdogs" || $: "mac and cheese" && $ != "oatmeal")
+
+//replaces
+
+if(option == "pizza" || option == "hotdogs" || option == "mac n cheese" || option != "oatmeal")
+
+
+/**
+ * ----- Reserved Keywords -----
+ * if, else if, else - used for if statments, duh
+ * asm - inject assembly into location or, if provided a name, can function similar to a macro
+ *
+ */
+ 
+ 
+ if()
+ 
+ //asm with name
+ asm add_vals{
+     LD A, 8    ;loads integer constant 8 into accumulator
+     ADD 16     ;adds accumulator and 16 together and stores result in accumulator register
+     HALT
+     NOP
+ }
+ 
+ //asm without name
+ asm{
+     LD A, 8    ;loads integer constant 8 into accumulator
+     ADD 16     ;adds accumulator and 16 together and stores result in accumulator register
+     HALT       ;halts the processor for 1 cycle
+     NOP        ;necessary after the HALT instruction
+ }
+ 
+ main(){
+  add_vals();
+ }
