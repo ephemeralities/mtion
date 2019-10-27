@@ -1,7 +1,7 @@
 int8 a;
 int8 b;
 
-int16 += b;
+int16 d += b;
 
 int8[25] c;
 

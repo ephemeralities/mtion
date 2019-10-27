@@ -2,28 +2,151 @@
 #include <vector>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #define TARGET_SYS GBC
 
 
 vector<std::string> functions;
 //vector<std::string> var_identifiers;
-unordered_map<std::string, Var) var_identifiers; 
+unordered_map<std::string, Var) var_identifiers;
+
+//namespace mtn{}
+enum FragType{
+    FUNCTION_DECLARATION,
+    FUNCTION_CALL,
+    STRING, 
+    INT,
+    CHAR,
+    ARRAY,
+    OPERATOR, 
+    VALUE,
+    IDENTIFIER,
+    RESERVED_KEYWORD,
+    VARIABLE_TYPE
+}
+
+std::string symbols[] = {
+    "{",
+    "}",
+    "[",
+    "]",
+    "(",
+    ")"
+}
+
+enum operators{
+    INC = "++",
+    DEC = "--",
+    ADD = "+",
+    SUB = "-",
+    DIV = "/",
+    ASSIGN = "="
+}
+
+
+std::unordered_map<std::string, FragType> types({
+    {"int", FragType::INT},
+    {"char", FragType::CHAR},
+    {"str", FragType::STRING},
+    {"++", FragType::OPERATOR},
+    {"--", FragType::OPERATOR},
+    {"+", FragType::OPERATOR},
+    {"-", FragType::OPERATOR},
+    {"=", FragType::OPERATOR},
+    {"{"},
+    {"}"},
+    {"("},
+    {")"}
+})
+
+struct Collection{
+    FragType type;
+    std::vector<Statement> body;
+}
+
+struct Statement{
+    FragType type;
+    vector<Fragment> fragments;
+}
+
+/*
+ *Fragments will be used to build the abstract tree of the program. Fragments are the smallest constituents
+ *of a program
+ */
+struct Fragment{
+    FragType type;
+    std::string value;
+}
+
 
 vector<std::string> warnings;
 
-void parse(string body){
+
+/**
+int parse(string body){
     vector<string> words;
     
-    for(each word in body string){
-        words.push_back(word(string, TYPE));
-    }
+    std::string line; 
+    std::string tempword;
     
-    if(var_identifiers.find(VAR_TO_COMPARE) == var_identifiers.end()){
-        warnings.push_back
-    }
+    getline(file, line);
+    vector<Statement> statements;
+    Statement tempStatement;
+    
+    for(int i = 0; i < line.length(); i++){
+        if(line[i] == ";"){
+            statements.push_back(tempStatement);
+            break;
+        }
         
+        if(line[i] > 32 && line[i] < 126){
+            tempword += line[i];
+        }else{
+            words.push_back(tempword);
+            tempword = "";
+        }
+    }
     
+    Statement s;
     
+    for(int i = 0; i < words.size(); i++){
+        Fragment tempFrag; 
+        
+        tempFrag.Type = FragType.find(words.get(0));
+    }
+}**/
+
+
+int parse(std::string file_location){
+    
+    ifstream file(file_location);
+    
+    if(!file.is_open())
+        return -1;
+    
+    vector<string> tokens;
+    
+    std::string line = "";
+    getline(file, line);
+    
+    int cursor = 0;
+    
+    while(line !== file.eof()){
+        int len = line.length();
+        
+        std::string tempToken;
+        for(int i = 0; i < len; i++){
+            if(line[i] == " "){
+                if(line.length() !== 0){
+                    tokens.push_back(line);
+                    line = "";
+                    continue;
+                }
+                continue;
+            }
+            
+        }
+    }
 }
 
 void displayMessages(){
@@ -38,7 +161,8 @@ int main(){
 }
 
 //Reserved keywords for the language
-std::string reserved_keywords[] = {
+
+std::unordered_set<std::string> reserved_keywords({
     "int8",
     "int16",
     "str",
@@ -47,17 +171,10 @@ std::string reserved_keywords[] = {
     "void",
     "BASE",
     "LOAD",
-    "ASM"
-}
+    "ASM",
+    "delete"
+});
 
-enum operators{
-    INC = "++",
-    DEC = "--",
-    ADD = "+",
-    SUB = "-",
-    DIV = "/",
-    ASSIGN = "="
-}
 
 //enum reserved_words
 
@@ -119,10 +236,3 @@ public struct Message{
     message(message_type type, std::string content) : type(type), content(content){};
 }
 
-//words will be used to build the abstract tree of the program. Words are the smallest item possible
-//in the program
-public struct word{
-    word_type type;
-    std::string content;
-    word(word_type type, std::string content) : type(type), content(content){};
-}
