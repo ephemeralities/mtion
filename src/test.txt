@@ -115,3 +115,30 @@ if(option == "pizza" || option == "hotdogs" || option == "mac n cheese" || optio
  main(){
   add_vals();
  }
+ 
+ 
+ 
+ /**
+  * ----- Tentative additions -----
+  *
+  * - To save on space, it could be interesting storing a boolean and being able
+  *   to access it using array syntax. Thus, an array could be a byte long but 
+  *   be used for 8 different states.
+  *
+  *   bool state; //defaults to 0x00000000
+  *   state[0] = true; //ordered from left to right
+  *
+  *   alt. version:
+  *   bool state = 0x10110101;
+  *
+  *   identifiers could be used for the array index of the boolean, but indexing
+  *   by number would be disabled
+  *
+  *   bool state[.alive=0] = true;
+  *   state[.running=1] = true;
+  *   state[4] = true;
+  *   state[5] = true;
+  *   state[.running => .active]; // would rename the index .running to .active
+  *
+  *   if(.active)
+  */

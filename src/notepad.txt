@@ -1,0 +1,10 @@
+"if",
+"else",
+"func",
+"asm",
+"++",
+"--"
+
+
+if operator is restricted
+    tell user info bubble, operator may not be efficient
