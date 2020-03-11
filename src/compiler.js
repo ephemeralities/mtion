@@ -1,3 +1,5 @@
+//https://github.com/jamiebuilds/the-super-tiny-compiler/blob/master/the-super-tiny-compiler.js
+
 const fs = require("fs");
 
 var file;
@@ -39,6 +41,11 @@ const RESERVED_IDENTIFIERS = [
     '$PC',  // Program counter register
     '$SP'   // Stack pointer register
     ];
+
+const MODIFIERS = [
+    'consistent',
+    'unsafe'
+    ];
     
     
 //symbols used for various reasons
@@ -53,13 +60,14 @@ const RESERVED_SYMBOLS = [
     '[',    //array index; possible change in meaning 
     ']',    //array index; ditto
     '.'     //multiuse tool, for now.
-    ]
+    ];
 
 //keywords reserved for use in program logic/function
 const RESERVED_KEYWORDS = [
     'asm',  //assembly or assembly functions
+    'end',  //ends a statement block
     'none', //basically undefined or null
-    'func', //functions
+    'fn', //functions
     'if',   //if statement
     'elif', //else if statement
     'else', //else statement
@@ -86,7 +94,8 @@ const RESERVED_OPERATORS = [
     '<',    //less than
     '!',    //negate boolean, but not store
     '!!',   //negate and set boolean
-    '=>',   //usage unknown atm, but could be used for something interesting
+    ';;',   //when used, end keyword no longer required
+    '=>',   //arrow operator specifies return type of a function
     '<=',   //ditto
     '.',    //ditto
     '$',    //ditto
@@ -96,7 +105,10 @@ const RESERVED_OPERATORS = [
     '?'     //ditto
     ];
     
-var USER_IDENTIFIERS = [];  //Array that stores user created variable identifiers
+var USER_IDENTIFIERS = {//Object that stores both user created functions and variable identifiers
+    functions: [],
+    variables: []
+};
 
 var token_list = [];    //individual tokens parsed from the program file
 
@@ -119,9 +131,11 @@ function token(){
 //Determines the type of the token based on predefined token types
 function type(object){
     
-    if(object >= '0' && object <= '9'){
+    if(object >= '0' && object <= '9')
         return "NUMBER_LITERAL";
-    }
+    
+    if(object == "int")
+        return "VAR_TYPE";
     
     for(let item of RESERVED_SYMBOLS){
         if(item == object)
@@ -167,9 +181,20 @@ fs.readFile("main.m", 'utf-8', (err, data)=>{
     file = data.replace(/\n/g, ' NEW_LINE ');
     
     let current_token = "";
+    let string_being_read = false;
     
     for(let i = 0; i < file.length; i++){
+        
+        if(file[i] == ":" || file[i] == ","){
+            if(current_token.length > 0){
+                token_list.push(current_token);
+                current_token = "";
+            }
+        }
+        
+        
         if(file[i] == '"'){
+            string_being_read = true;
             current_token += file[i];
             
             for(let j = i + 1; j < file.length; j++){
@@ -196,7 +221,13 @@ fs.readFile("main.m", 'utf-8', (err, data)=>{
     }
     token_list.push(current_token);
     
-    contextualize(clean_up());
+    if(string_being_read)
+        message_list.errors.push("Incomplete string: String was never closed");
+    
+    token_list = contextualize(clean_up());
+    
+    if(message_list.errors.length > 0)
+        console.log(message_list.errors);
 });
 
 
@@ -210,12 +241,6 @@ function clean_up(){
     
     let current_line = 0;               //current line token is on
     let c_line_comment = false;         //set to true when comment is active on line
-    let c_string_literal = false;       //true whenever a string literal is actively being read
-    let double_quotes_active = false    //true whenever string literal was started by double quotes
-    let single_quotes_active = false    //true whenever string literal was started by single quotes
-    
-    let persistent_token;               //persistent token that persists between loops (used mainly for string literals)
-    
     
     //goes through each token in the dirty token list
     for(var i = 0; i < token_list.length; i++){
@@ -235,7 +260,6 @@ function clean_up(){
             type: undefined,        //Type of token goes here
             value: "",              //pretty much the identifier of the token
             line: current_line,     //line where token is found
-            children: []            //tokens that are associated with this token
         };
         
         //going through each character in token 
@@ -282,7 +306,7 @@ function clean_up(){
         if(new_token.value.length > 0 || new_token.value != undefined)
             updated_list.push(new_token);
     }
-    
+
     return updated_list;
 }
 
@@ -320,7 +344,38 @@ function contextualize(token_array){
         
     }
     
-    console.log(new_arr);
+    
+    let reading_fn_param = false;
+    
+    for(let i = 0; i < new_arr.length; i++){
+        let curr_token = new_arr[i];
+        let next_token = new_arr[i + 1];
+        
+        if(curr_token.value == "fn"){
+            next_token.type = "FUNCTION_IDENTIFIER";
+            reading_fn_param = true;
+            continue;
+        }
+        
+        if(curr_token.value == ":"){
+            reading_fn_param = false;
+        }
+        
+        //ok so guess it's time to declare scoping out?
+        if(curr_token.type == "VAR_TYPE"){
+            if(next_token.type == "UNKNOWN/ERROR"){
+                next_token.type = reading_fn_param ? "FUNCTION_PARAM" : "USER_VAR";
+            }
+        }
+        
+        if(curr_token == "UNKNOWN/ERROR"){
+            for(let type of USER_IDENTIFIERS.variables){
+                
+            }
+        }
+    }
+    
+    console.log ( new_arr );
     
     
     return 1;
@@ -350,54 +405,85 @@ function contextualize(token_array){
 }
 
 
-//recursive function... to be implemented
-function read_down_tree(token, token_list){
+
+()=>{
     
     
-    
-    
-    
-    
-    /**
-        for(let token of token_array){
-        if(!working_on_statement){
-            //if a var type is read in, expect an identifier to come next
-            if(token.type == "VAR_TYPE"){
-                working_on_statement = true;    //working flag is set to true
-                current_working_token = token   //work will now be done on the var identifier token
-            }
-        }else{
-            
-        }
+    let GlobalIdentifiers = {
+        collections: [],            //similar to C structs
+        functions:[],               //Functions exist here
+        variables: []
     }
     
-    for(let token of token_array){
-        if(!working_on_statement){
-            if(token.type == "VAR_TYPE"){
-                working_on_statement = true;
-                current_working_token = token;
-            }
-        }else{
-            if(token == "UNKNOWN/ERROR" && current_working_token == "VAR_TYPE"){
-                USER_IDENTIFIERS.push(token.value);
-            }
-        }
+    
+    let variable = {
+        identifier: '',
+        type: '',
+        value: '',
+        scope: 'GLOBAL | Function name'
     }
     
-    let end = false;
-    if(!end)
-        read_down_tree("hello", 3);
-    else
-        return "yes";
-        
-        **/
+    let func = {
+        identifier: '',
+        params: [
+            {
+                identifier: 'a',
+                type: 'int8',
+                value: '109',
+                scope: 'function'
+            },
+            {
+                identifier: 'b',
+                type: 'int8',
+                value: '1840',
+                scope: 'function'
+            }],
+        body: [],
+        scope:[],
+        ret: {
+            type: 'int16',
+            value: '10428'
+        }
+    }
 }
 
+
+function defining(){
+    let func = {
+        type: "Function",
+        params: [],
+        local_var: [],
+        body: []
+    };
+    
+    for(let i = 0; i < token_list.length; i++){
+        let token = token_list[i];
+        let next_token = token_list[i + 1];
+        
+        if(token.type == "USER_VAR"){
+            
+        }else if(token.type == "FUNCTION_PARAM"){
+            func.params.push()
+        }
+    }
+    
+    
+}
+
+function tree_walk(){
+    
+}
 function valid_identifier(identifier){
     
     if(identifier[0] == '$')
-        message_list.warnings.push(`${identifier}`);
+        return false;
     
     let valid = /^[A-Za-z]+$/;
     return valid.test(valid);
 }
+
+
+let ast = {
+    type: "Program",
+    body: []
+};

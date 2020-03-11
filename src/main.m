@@ -1,34 +1,36 @@
-int8 a;
-int8 b;
+int a = 8;
+int b = 9;
 
-int16 d += b;
+int c = a + b;
 
-str message = "hello world";
+fn add int a, int b => int : 
+    ret a + b;;
 
-if a > b => c : d
-
-//if (a != <b | c | d>)
-
-
-if(a != { b, c, d })
-
-if a != <b, c, d> ?
-
-
-
-int8 func add(int8 a, int8 b){
-    a + b; //return is implied
-}
-
-fn add(int8, int8){
-
-    ret a{int8};
-}
-
-int8 func sub(int8 a, int8 ){
+fn sub int a, int b => int :
+    ret a - b;;
     
-}
 
-BASE("exampleProgram.m" :: main);
+fn testfunc str string, int index => bool :
+    
+    int string = fn.string.length;
+    
+    ret fn.string;;
+    
 
-LOAD("image-module.m" :: control_output);
+fn init => none:
+    for int i {0, 10, 1}:
+        //consistent int sum;
+        print i;;
+    
+fn main => none:
+    
+
+int flag; 
+
+fn asm _add{unsafe} int a, int b, int .store => int :
+    LD a, $A
+    LD b, $H
+    ADD $H
+    STORE $A, .store
+    
+add 10, 9, flag;
