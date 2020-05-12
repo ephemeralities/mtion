@@ -1,20 +1,21 @@
 int a = 8;
 int b = 9;
 
-int c = a + b;
+int c :: 0x0ff = a + b;
+
 
 fn add int a, int b => int : 
     ret a + b;;
 
 fn sub int a, int b => int :
     ret a - b;;
-    
+
 
 fn testfunc str string, int index => bool :
     
     int string = fn.string.length;
     
-    ret fn.string;;
+    ret fn->string;;
     
 
 fn init => none:
@@ -27,10 +28,12 @@ fn main => none:
 
 int flag; 
 
+/,
 fn asm _add{unsafe} int a, int b, int .store => int :
     LD a, $A
     LD b, $H
     ADD $H
     STORE $A, .store
     
+,/
 add 10, 9, flag;

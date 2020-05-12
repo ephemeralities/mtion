@@ -43,7 +43,7 @@ const RESERVED_IDENTIFIERS = [
     ];
 
 const MODIFIERS = [
-    'consistent',
+    'persistent',
     'unsafe'
     ];
     
@@ -178,10 +178,16 @@ fs.readFile("main.m", 'utf-8', (err, data)=>{
     if(err)
         console.log("An Error has occurred. Does the file exist?");
         
-    file = data.replace(/\n/g, ' NEW_LINE ');
+    file = data.replace(/\n/g, ' NEW_LINE ');       //replaces /n with NEW_LINE
     
-    let current_token = "";
-    let string_being_read = false;
+    let current_token = "";                         //current token 
+    let string_being_read = false;                  //true if token is in a string
+    
+    
+    for(let i = 0; i < file.length; i++){
+        let bit = file[i];
+        
+    }
     
     for(let i = 0; i < file.length; i++){
         
